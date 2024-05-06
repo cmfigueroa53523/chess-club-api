@@ -1,0 +1,25 @@
+{
+  "name": "chess-club-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/knaiskes/chess-club-api.git"
+  },
+  "author": "Kiriakos Naiskes",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/knaiskes/chess-club-api/issues"
+  },
+  "homepage": "https://github.com/knaiskes/chess-club-api#readme",
+  "dependencies": {
+    "@fastify/postgres": "^5.2.2",
+    "fastify": "^4.26.2",
+    "pg": "^8.11.5",
+    "pino-pretty": "^11.0.0"
+  }
+}
