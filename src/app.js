@@ -4,7 +4,7 @@ export async function build(opts = {}) {
   const app = fastify(opts);
 
   app.register(import('@fastify/postgres'), {
-    connectionString: 'postgres://postgres:postgres@localhost:5432/chess_club',
+    connectionString: process.env.DB_CONNECTION_URL,
   });
 
   const v1Prefix = '/api/v1';

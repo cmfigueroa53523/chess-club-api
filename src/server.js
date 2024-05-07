@@ -1,8 +1,8 @@
 import { build } from './app.js';
 
-const host = process.env.HOST || 'localhost';
-const port = process.env.PORT || '3000';
-const logLevel = process.env.LOGGER_LEVEL || 'info';
+const host = process.env.HOST;
+const port = process.env.PORT;
+const logLevel = process.env.LOGGER_LEVEL;
 
 const opts = {
   logger: {
