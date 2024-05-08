@@ -42,7 +42,19 @@ export default async function membersRoutes(app) {
       }
     });
 
-  app.get('/members', async(req, res) => {
+  app.get('/members', {
+    schema: {
+      response: {
+	200: {
+	  type: 'object',
+	  properties: {
+	    data: { type: 'array' }
+	  },
+	},
+      },
+    },
+  },
+    async(req, res) => {
     try {
       const members = await app.pg.query('SELECT * FROM members');
       return { data: members.rows };
