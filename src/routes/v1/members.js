@@ -90,6 +90,9 @@ export default async function membersRoutes(app) {
       try {
 	const { id } = req.params;
 	const member = await app.pg.query('SELECT * FROM members WHERE id = $1', [id]);
+	if(member.rows.length === 0) {
+	  return res.code(404).send({ message: 'Member not found' });
+	}
 	return member.rows[0];
       } catch(error) {
 	res.code(error.statusCode || 500);
@@ -105,7 +108,7 @@ export default async function membersRoutes(app) {
 
       try {
 	const member = await app.pg.query('SELECT * FROM members WHERE id = $1', [id]);
-	if(!member) {
+	if(member.rows.length === 0) {
 	  return res.code(404).send({ message: 'Member not found' });
 	}
 	if(Object.keys(bodyData).length == 0) {
