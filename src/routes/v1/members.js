@@ -97,4 +97,34 @@ export default async function membersRoutes(app) {
 	return { msg: 'Could not fetch member' };
       }
     });
+
+  app.patch('/members/:id',
+    async(req, res) => {
+      const { id } = req.params;
+      const bodyData = req.body;
+
+      try {
+	const member = await app.pg.query('SELECT * FROM members WHERE id = $1', [id]);
+	if(!member) {
+	  return res.code(404).send({ message: 'Member not found' });
+	}
+	if(Object.keys(bodyData).length == 0) {
+	  return res.code(404).send({ message: 'No fields provided' });
+	}
+
+	const setClause = Object.keys(bodyData).map((key, index) => `${key} = $${index + 1}`).join(', ');
+
+	const sql = `UPDATE members SET ${setClause} WHERE id = $${Object.keys(bodyData).length + 1}`;
+	const values = [...Object.values(bodyData), id];
+
+	await app.pg.query(sql, values);
+
+	res.code(200).send();
+
+      } catch(error) {
+	res.code(error.statusCode || 500);
+	req.log.error(error);
+	return { msg: 'Could not fetch member' };
+      }
+    });
 }
