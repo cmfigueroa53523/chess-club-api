@@ -130,4 +130,34 @@ export default async function membersRoutes(app) {
 	return { msg: 'Could not fetch member' };
       }
     });
+
+  app.delete('/members/:id', async (req, res) => {
+    const { id } = req.params;
+
+    try {
+      if (!id) { // TODO: use schema instead
+        return res.code(400).send({ message: 'ID is required' });
+      }
+
+      const result = await app.pg.query(`
+            WITH deleted_member_contacts AS (
+                DELETE FROM member_contacts
+                WHERE member_id = $1
+                RETURNING *
+            )
+            DELETE FROM members WHERE id = $1
+            RETURNING *
+        `, [id]);
+
+      if (result.rows.length > 0) {
+        res.code(204).send();
+      } else {
+        res.code(404).send();
+      }
+    } catch(error) {
+      res.code(error.statusCode || 500).send({ message: 'Could not delete member' });
+      req.log.error(error);
+    }
+  });
+
 }
