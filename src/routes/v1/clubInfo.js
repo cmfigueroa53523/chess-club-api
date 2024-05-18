@@ -1,3 +1,5 @@
+import { toSnakeCase } from '../../utils/utils.js';
+
 export default async function clubInfoRoutes(app) {
   app.post('/club-info',
     {
@@ -73,7 +75,7 @@ export default async function clubInfoRoutes(app) {
 	  return res.code(404).send({ message: 'No fields provided' });
 	}
 
-	const setClause = Object.keys(bodyData).map((key, index) => `${key} = $${index + 1}`).join(', ');
+	const setClause = Object.keys(bodyData).map((key, index) => `${toSnakeCase(key)} = $${index + 1}`).join(', ');
 
 	const sql = `UPDATE club_info SET ${setClause} WHERE id = $${Object.keys(bodyData).length + 1}`;
 	const values = [...Object.values(bodyData), id];
