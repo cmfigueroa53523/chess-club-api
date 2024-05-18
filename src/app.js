@@ -10,6 +10,7 @@ export async function build(opts = {}) {
   const v1Prefix = '/api/v1';
 
   app.register(import('./routes/v1/members.js'), { prefix: v1Prefix });
+  app.register(import('./routes/v1/clubInfo.js'), { prefix: v1Prefix });
 
   return app;
 }
