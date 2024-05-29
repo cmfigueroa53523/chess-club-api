@@ -3,6 +3,11 @@ import fastify from 'fastify';
 export async function build(opts = {}) {
   const app = fastify(opts);
 
+  await app.register(import('@fastify/rate-limit'), {
+    max: 50,
+    timeWindow: '1 minute'
+  });
+
   app.register(import('@fastify/postgres'), {
     connectionString: process.env.DB_CONNECTION_URL,
   });
