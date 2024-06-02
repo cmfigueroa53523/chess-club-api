@@ -1,0 +1,11 @@
+services:
+  api:
+    build: .
+    ports:
+      - "3000:3000"
+    networks:
+      - chess_club_network
+
+networks:
+  chess_club_network:
+    external: true
