@@ -1,7 +1,7 @@
 import { toSnakeCase } from '../../utils/utils.js';
 
 export default async function membersRoutes(app) {
-  //  app.addHook('preValidation', app.authenticate);
+  app.addHook('preValidation', app.authenticate);
 
   app.post('/members',
     {
