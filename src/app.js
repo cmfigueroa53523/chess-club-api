@@ -27,7 +27,7 @@ export async function build(opts = {}) {
   app.register(import('@fastify/cookie'));
 
   // Authentication decorator
-  app.decorate("authenticate", async function(request, reply) {
+  app.decorate('authenticate', async function(request, reply) {
     try {
       await request.jwtVerify();
     } catch (err) {
@@ -35,19 +35,24 @@ export async function build(opts = {}) {
     }
   });
 
-  app.post('/get-token', (req, reply) => {
+  app.post('/get-token', async (req, reply) => {
     const { username, password } = req.body;
 
-    // TODO: check db values
-    if(username === 'test' && password === 'test') {
-      const token = app.jwt.sign({ username }, { expiresIn: '7d'});
-      const refreshToken = app.jwt.sign({ username }, { secret: JWT_REFRESH_SECRET, expiresIn: '8d' });
-      reply.setCookie('refreshToken', refreshToken, { path: '/', httpOnly: true });
-      reply.send({ token });
+    try {
+      const userExists = await app.pg.query('SELECT id FROM platform_users WHERE username = $1 AND password = crypt($2, password)', [username, password]);
+      if(userExists.rowCount === 1) {
+	const token = app.jwt.sign({ username }, { expiresIn: '7d'});
+	const refreshToken = app.jwt.sign({ username }, { secret: JWT_REFRESH_SECRET, expiresIn: '8d' });
+	reply.setCookie('refreshToken', refreshToken, { path: '/', httpOnly: true });
+	reply.send({ token });
+      } else {
+	reply.status(401).send({ error: 'username and password do not match' });
+      }
+    } catch(error) {
+      reply.code(error.statusCode || 500);
+      req.log.error(error);
+      return { msg: 'Could not check user credentials' };
     }
-
-    reply.status(401).send({ error: 'Email or password is incorrect' });
-
   });
 
   app.post('/refresh-token', async (request, reply) => {
