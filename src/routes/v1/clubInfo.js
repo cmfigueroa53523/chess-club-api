@@ -1,6 +1,8 @@
 import { toSnakeCase } from '../../utils/utils.js';
 
 export default async function clubInfoRoutes(app) {
+  app.addHook('preValidation', app.authenticate);
+
   app.post('/club-info',
     {
       schema: {
