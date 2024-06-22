@@ -34,3 +34,9 @@ npm run start
 ```
 npm run dev
 ```
+
+## Get a token
+
+```
+curl -X POST url:3000/get-token -H "Content-Type: application/json" -d '{"username": "user", "password": "password"}'
+```
