@@ -1,4 +1,5 @@
 import fastify from 'fastify';
+import cors from '@fastify/cors';
 
 export async function build(opts = {}) {
   const app = fastify(opts);
@@ -7,6 +8,8 @@ export async function build(opts = {}) {
     max: 50,
     timeWindow: '1 minute'
   });
+
+  await app.register(cors, {});
 
   app.register(import('@fastify/postgres'), {
     connectionString: process.env.DB_CONNECTION_URL,
