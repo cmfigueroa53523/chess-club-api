@@ -52,7 +52,7 @@ export default async function membersRoutes(app) {
 	200: {
 	  type: 'object',
 	  properties: {
-	    data: { type: 'array' }
+	    members: { type: 'array' }
 	  },
 	},
       },
@@ -61,7 +61,7 @@ export default async function membersRoutes(app) {
     async(req, res) => {
     try {
       const members = await app.pg.query('SELECT * FROM members');
-      return { data: members.rows };
+      return { members: members.rows };
     } catch(error) {
       res.code(error.statusCode || 500);
       req.log.error(error);
