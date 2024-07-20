@@ -54,13 +54,19 @@ export default async function membersRoutes(app) {
 	  properties: {
 	    members: { type: 'array' }
 	  },
+	  querystring: {
+	    search: { type: 'string' }
+	  }
 	},
       },
     },
   },
     async(req, res) => {
+      const { search } = req.query;
+      const searchFilter = search ?
+	` AND( firstname ILIKE '${search}%' OR lastname ILIKE '${search}' OR email ILIKE '${search}' )` : '';
     try {
-      const members = await app.pg.query('SELECT * FROM members');
+      const members = await app.pg.query(`SELECT * FROM members WHERE 1=1 ${searchFilter} `);
       return { members: members.rows };
     } catch(error) {
       res.code(error.statusCode || 500);
