@@ -52,7 +52,8 @@ export default async function membersRoutes(app) {
 	200: {
 	  type: 'object',
 	  properties: {
-	    members: { type: 'array' }
+	    members: { type: 'array' },
+	    count: { type: 'number' }
 	  },
 	  querystring: {
 	    search: { type: 'string' }
@@ -67,7 +68,7 @@ export default async function membersRoutes(app) {
 	` AND( firstname ILIKE '${search}%' OR lastname ILIKE '${search}' OR email ILIKE '${search}' )` : '';
     try {
       const members = await app.pg.query(`SELECT * FROM members WHERE 1=1 ${searchFilter} `);
-      return { members: members.rows };
+      return { members: members.rows, count: members.rowCount };
     } catch(error) {
       res.code(error.statusCode || 500);
       req.log.error(error);
