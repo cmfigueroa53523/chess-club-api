@@ -67,7 +67,7 @@ export default async function membersRoutes(app) {
       const searchFilter = search ?
 	` AND( firstname ILIKE '${search}%' OR lastname ILIKE '${search}' OR email ILIKE '${search}' )` : '';
     try {
-      const members = await app.pg.query(`SELECT * FROM members WHERE 1=1 ${searchFilter} `);
+      const members = await app.pg.query(`SELECT * FROM members WHERE 1=1 AND club_id = 'd0334c59-2ecd-47a1-b6ec-790da922f623' ${searchFilter} `);
       return { members: members.rows, count: members.rowCount };
     } catch(error) {
       res.code(error.statusCode || 500);

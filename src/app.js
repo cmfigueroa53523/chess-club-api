@@ -42,7 +42,7 @@ export async function build(opts = {}) {
     const { username, password } = req.body;
 
     try {
-      const userExists = await app.pg.query('SELECT id FROM platform_users WHERE username = $1 AND password = crypt($2, password)', [username, password]);
+      const userExists = await app.pg.query('SELECT id FROM club_admins WHERE username = $1 AND password = crypt($2, password)', [username, password]);
       if(userExists.rowCount === 1) {
 	const token = app.jwt.sign({ username }, { expiresIn: '7d'});
 	const refreshToken = app.jwt.sign({ username }, { secret: JWT_REFRESH_SECRET, expiresIn: '8d' });
