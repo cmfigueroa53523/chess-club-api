@@ -100,10 +100,16 @@ export default async function membersRoutes(app) {
     async(req, res) => {
       try {
 	const { id } = req.params;
-	const member = await app.pg.query('SELECT * FROM members WHERE id = $1', [id]);
+	const member = await app.pg.query(
+	  `SELECT id, firstname, lastname, age, gender, email, is_active, fide_rating,
+           overdue_subscription, lichess_profile, chesscom_profile, fide_profile,
+           joined_at
+           FROM members WHERE id = $1`
+	  , [id]);
 	if(member.rows.length === 0) {
 	  return res.code(404).send({ message: 'Member not found' });
 	}
+	console.log('member: ', member.rows[0]);
 	return member.rows[0];
       } catch(error) {
 	res.code(error.statusCode || 500);
