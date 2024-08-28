@@ -163,7 +163,7 @@ export default async function membersRoutes(app) {
                 RETURNING *
             )
             DELETE FROM members WHERE id = $1
-            RETURNING *
+            RETURNING id
         `, [id]);
 
       if (result.rows.length > 0) {
