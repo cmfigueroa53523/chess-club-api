@@ -132,7 +132,13 @@ export default async function membersRoutes(app) {
 	  return res.code(404).send({ message: 'No fields provided' });
 	}
 
-	const setClause = Object.keys(bodyData).map((key, index) => `${toSnakeCase(key)} = $${index + 1}`).join(', ');
+	Object.keys(bodyData).forEach(key => {
+	  if (bodyData[key] === '') {
+	    bodyData[key] = null;
+	  }
+	});
+
+	const setClause = Object.keys(bodyData).map((key, index) => { return `${toSnakeCase(key)} = $${index + 1}`;}).join(', ');
 
 	const sql = `UPDATE members SET ${setClause} WHERE id = $${Object.keys(bodyData).length + 1}`;
 	const values = [...Object.values(bodyData), id];
