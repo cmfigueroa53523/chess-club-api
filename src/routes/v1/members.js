@@ -124,7 +124,7 @@ export default async function membersRoutes(app) {
       const bodyData = req.body;
 
       try {
-	const member = await app.pg.query('SELECT * FROM members WHERE id = $1', [id]);
+	const member = await app.pg.query('SELECT id FROM members WHERE id = $1', [id]);
 	if(member.rows.length === 0) {
 	  return res.code(404).send({ message: 'Member not found' });
 	}
