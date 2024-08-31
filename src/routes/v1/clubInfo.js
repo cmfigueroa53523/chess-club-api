@@ -25,9 +25,9 @@ export default async function clubInfoRoutes(app) {
 
       try {
 	const insertClub = await app.pg.query(`
-        INSERT INTO club_info (club_name, address, email, description, phone_number, contact_type)
-        VALUES($1, $2, $3, $4, $5, $6) RETURNING id`,
-	  [clubName, address, email, description, phoneNumber, contactType]
+        INSERT INTO clubs (name, address, email, description)
+        VALUES($1, $2, $3, $4) RETURNING id`,
+	  [clubName, address, email, description]
 	);
 	return { id: insertClub.rows[0].id };
       } catch(error) {
@@ -37,21 +37,17 @@ export default async function clubInfoRoutes(app) {
       }
     });
 
-  app.get('/club-info/:id', {
+  app.get('/club-info', {
     schema: {
-      params: {
-	type: 'object',
-	properties: {
-	  id: { type: 'string' },
-	},
-	required: ['id'],
-      },
     },
   },
     async(req, res) => {
       try {
-	const { id } = req.params;
-	const club = await app.pg.query('SELECT * FROM club_info WHERE id = $1', [id]);
+	const club = await app.pg.query(`
+        SELECT clubs.id, name, address, email, description, phone_number, contact_type
+        FROM clubs
+        LEFT JOIN club_contacts ON clubs.id = club_contacts.club_id
+        LIMIT 1`);
 	if(club.rows.length === 0) {
 	  return res.code(404).send({ message: 'Club not found' });
 	}
@@ -69,7 +65,7 @@ export default async function clubInfoRoutes(app) {
       const bodyData = req.body;
 
       try {
-	const club = await app.pg.query('SELECT * FROM club_info WHERE id = $1', [id]);
+	const club = await app.pg.query('SELECT id FROM clubs WHERE id = $1', [id]);
 	if(club.rows.length === 0) {
 	  return res.code(404).send({ message: 'Club not found' });
 	}
@@ -79,7 +75,7 @@ export default async function clubInfoRoutes(app) {
 
 	const setClause = Object.keys(bodyData).map((key, index) => `${toSnakeCase(key)} = $${index + 1}`).join(', ');
 
-	const sql = `UPDATE club_info SET ${setClause} WHERE id = $${Object.keys(bodyData).length + 1}`;
+	const sql = `UPDATE clubs SET ${setClause} WHERE id = $${Object.keys(bodyData).length + 1}`;
 	const values = [...Object.values(bodyData), id];
 
 	await app.pg.query(sql, values);
@@ -101,7 +97,7 @@ export default async function clubInfoRoutes(app) {
         return res.code(400).send({ message: 'ID is required' });
       }
 
-      const result = await app.pg.query(`DELETE FROM club_info WHERE id = $1 RETURNING *`, [id]);
+      const result = await app.pg.query(`DELETE FROM clubs WHERE id = $1 RETURNING id`, [id]);
 
       if (result.rows.length > 0) {
         res.code(204).send();
