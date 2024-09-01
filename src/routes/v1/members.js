@@ -9,8 +9,8 @@ export default async function membersRoutes(app) {
 	body: {
 	  type: 'object',
 	  properties: {
-	    firstName: { type: 'string' },
-	    lastName: { type: 'string' },
+	    firstname: { type: 'string' },
+	    lastname: { type: 'string' },
 	    age: { type: 'number', nullable: false, minimum: 14 },
 	    email: { type: 'string', nullable: false },
 	    isActive: { type: 'boolean', nullable: false, default: true },
@@ -22,12 +22,12 @@ export default async function membersRoutes(app) {
 	    overDueSubscription: { type: 'boolean', nullable: false, default: false },
 	    gender: { type: 'string', enum: ['Male', 'Female', 'Other'] },
 	  },
-	  required: ['firstName', 'lastName', 'age', 'email', 'gender'],
+	  required: ['firstname', 'lastname', 'age', 'email', 'gender'],
 	},
       },
     },
     async(req, res) => {
-      const { firstName, lastName, age, email, isActive, fideRating, profilePhotoUrl,
+      const { firstname, lastname, age, email, isActive, fideRating, profilePhotoUrl,
 	lichessProfile, chessComProfile, overDueSubscription, gender } = req.body;
 
       try {
@@ -35,7 +35,7 @@ export default async function membersRoutes(app) {
         INSERT INTO members (firstname, lastname, age, email, is_active, fide_rating,
         profile_photo_url, lichess_profile, chesscom_profile, overdue_subscription, gender)
         VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING id`,
-	  [firstName, lastName, age, email, isActive, fideRating, profilePhotoUrl, lichessProfile,
+	  [firstname, lastname, age, email, isActive, fideRating, profilePhotoUrl, lichessProfile,
 	    chessComProfile, overDueSubscription, gender]
 	);
 	return { id: insertMember.rows[0].id };
