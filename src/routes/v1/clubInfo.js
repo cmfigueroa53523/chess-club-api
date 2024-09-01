@@ -73,12 +73,26 @@ export default async function clubInfoRoutes(app) {
 	  return res.code(404).send({ message: 'No fields provided' });
 	}
 
-	const setClause = Object.keys(bodyData).map((key, index) => `${toSnakeCase(key)} = $${index + 1}`).join(', ');
+	const clubInfoFields = { ...bodyData };
+	delete clubInfoFields.phone_number;
+	delete clubInfoFields.contact_type;
 
-	const sql = `UPDATE clubs SET ${setClause} WHERE id = $${Object.keys(bodyData).length + 1}`;
-	const values = [...Object.values(bodyData), id];
+	const contactsFields = { phone_number: bodyData.phone_number, contact_type: bodyData.contact_type };
+
+	const setClause = Object.keys(clubInfoFields).map((key, index) => `${toSnakeCase(key)} = $${index + 1}`).join(', ');
+
+	const sql = `UPDATE clubs SET ${setClause} WHERE id = $${Object.keys(clubInfoFields).length + 1}`;
+	const values = [...Object.values(clubInfoFields), id];
 
 	await app.pg.query(sql, values);
+
+	// contacts
+	const setContactsClause = Object.keys(contactsFields).map((key, index) => `${toSnakeCase(key)} = $${index + 1}`).join(', ');
+
+	const sqlContacts = `UPDATE club_contacts SET ${setContactsClause} WHERE club_id =$${Object.keys(contactsFields).length + 1}`;
+	const valuesContacts = [...Object.values(contactsFields), bodyData.id];
+
+	await app.pg.query(sqlContacts, valuesContacts);
 
 	res.code(200).send();
 
